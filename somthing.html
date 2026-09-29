@@ -81,7 +81,7 @@
       <div><kbd>Space</kbd> Jump / brake</div>
       <div><kbd>E</kbd> Enter / exit nearby vehicle</div>
       <div><kbd>R</kbd> Respawn at checkpoint</div>
-      <div>Fly: <kbd>W</kbd>/<kbd>S</kbd> pitch · <kbd>A</kbd>/<kbd>D</kbd> turn</div>
+      <div>Plane: <kbd>W</kbd> forward · <kbd>S</kbd> brake/reverse · <kbd>A</kbd>/<kbd>D</kbd> turn</div>
       <div><kbd>Space</kbd> rise · <kbd>Shift</kbd> descend</div>
       <div>Mouse: rotate camera</div>
     </div>
@@ -504,35 +504,8 @@
     // Player.
     // -------------------------------------------------------------------------
 
-    function createFallbackPlayerVisual() {
-      const g = new THREE.Group();
-      g.userData.humanoid = { arms: [], legs: [], torso: null, head: null, spine: null };
-      const skin = new THREE.MeshStandardMaterial({ color: 0xd7a17e, roughness: .72, metalness: .02 });
-      const shirt = new THREE.MeshStandardMaterial({ color: 0x377eb8, roughness: .62, metalness: .05 });
-      const pants = new THREE.MeshStandardMaterial({ color: 0x22324c, roughness: .76 });
-      const shoes = new THREE.MeshStandardMaterial({ color: 0x171b22, roughness: .86 });
-      const hair = new THREE.MeshStandardMaterial({ color: 0x2d201c, roughness: .88 });
-      const spine = new THREE.Group(); spine.position.y = .98; g.add(spine); g.userData.humanoid.spine = spine;
-      const torso = new THREE.Mesh(new THREE.CapsuleGeometry(.34,.64,8,14), shirt); torso.position.y=.27; torso.scale.set(1,1.06,.78); torso.castShadow=torso.receiveShadow=true; spine.add(torso); g.userData.humanoid.torso=torso;
-      const neck = new THREE.Mesh(new THREE.CylinderGeometry(.105,.115,.16,10), skin); neck.position.y=.76; spine.add(neck);
-      const head = new THREE.Mesh(new THREE.SphereGeometry(.30,18,14), skin); head.position.y=1.02; head.scale.set(.92,1.08,.9); head.castShadow=true; spine.add(head); g.userData.humanoid.head=head;
-      const hairCap = new THREE.Mesh(new THREE.SphereGeometry(.313,18,10,0,Math.PI*2,0,Math.PI*.54), hair); hairCap.position.y=1.105; hairCap.scale.set(.95,.78,.93); spine.add(hairCap);
-      for (const side of [-.105,.105]) { const eye=new THREE.Mesh(new THREE.SphereGeometry(.026,8,6),new THREE.MeshBasicMaterial({color:0x15202d})); eye.position.set(side,1.05,.27); spine.add(eye); }
-      const nose=new THREE.Mesh(new THREE.SphereGeometry(.037,8,6),skin); nose.position.set(0,1,.287); spine.add(nose);
-      for (const side of [-1,1]) {
-        const shoulder=new THREE.Group(); shoulder.position.set(side*.40,.52,0); spine.add(shoulder);
-        const upper=new THREE.Mesh(new THREE.CapsuleGeometry(.095,.36,6,10),shirt); upper.position.y=-.25;
-        const fore=new THREE.Mesh(new THREE.CapsuleGeometry(.082,.25,6,10),skin); fore.position.y=-.56;
-        const hand=new THREE.Mesh(new THREE.SphereGeometry(.095,10,8),skin); hand.position.y=-.74; upper.castShadow=fore.castShadow=hand.castShadow=true; shoulder.add(upper,fore,hand); g.userData.humanoid.arms.push({pivot:shoulder,side});
-        const hip=new THREE.Group(); hip.position.set(side*.18,.88,0); g.add(hip);
-        const thigh=new THREE.Mesh(new THREE.CapsuleGeometry(.13,.36,6,10),pants); thigh.position.y=-.25;
-        const shin=new THREE.Mesh(new THREE.CapsuleGeometry(.112,.28,6,10),pants); shin.position.y=-.55;
-        const foot=new THREE.Mesh(new THREE.BoxGeometry(.21,.12,.39),shoes); foot.position.set(0,-.78,.09); thigh.castShadow=shin.castShadow=foot.castShadow=true; hip.add(thigh,shin,foot); g.userData.humanoid.legs.push({pivot:hip,side});
-      }
-      const pack=new THREE.Mesh(new THREE.BoxGeometry(.39,.49,.18),new THREE.MeshStandardMaterial({color:0xd85d4c,roughness:.7})); pack.position.set(0,.34,-.25); pack.castShadow=true; spine.add(pack);
-      const shadow=new THREE.Mesh(new THREE.CircleGeometry(.56,28),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:.18})); shadow.rotation.x=-Math.PI/2; shadow.position.y=.018; g.add(shadow);
-      return g;
-    }
+    function createFallbackPlayerVisual(){const g=new THREE.Group();g.userData.humanoid={arms:[],legs:[],body:null,head:null};const skin=new THREE.MeshStandardMaterial({color:0xd89b76,flatShading:true}),shirt=new THREE.MeshStandardMaterial({color:0x4f91c5,flatShading:true}),pants=new THREE.MeshStandardMaterial({color:0x293c58,flatShading:true}),hair=new THREE.MeshStandardMaterial({color:0x40281f,flatShading:true});const body=new THREE.Mesh(new THREE.CapsuleGeometry(.36,.68,6,10),shirt);body.position.y=1.22;g.add(body);g.userData.humanoid.body=body;const head=new THREE.Mesh(new THREE.SphereGeometry(.32,14,10),skin);head.position.y=1.94;g.add(head);g.userData.humanoid.head=head;const cap=new THREE.Mesh(new THREE.SphereGeometry(.335,14,8,0,Math.PI*2,0,Math.PI*.55),hair);cap.position.y=2.04;g.add(cap);for(const side of[-1,1]){const ap=new THREE.Group();ap.position.set(side*.44,1.5,0);const a=new THREE.Mesh(new THREE.CapsuleGeometry(.105,.48,5,8),shirt);a.position.y=-.29;ap.add(a);g.add(ap);g.userData.humanoid.arms.push({pivot:ap,side});const lp=new THREE.Group();lp.position.set(side*.2,.74,0);const l=new THREE.Mesh(new THREE.CapsuleGeometry(.14,.48,5,8),pants);l.position.y=-.31;lp.add(l);g.add(lp);g.userData.humanoid.legs.push({pivot:lp,side});}const pack=new THREE.Mesh(new THREE.BoxGeometry(.44,.56,.2),new THREE.MeshStandardMaterial({color:0xe8745d,flatShading:true}));pack.position.set(0,1.28,-.27);g.add(pack);return g;}
+
     function createPlayer() {
       const body = new CANNON.Body({
         mass: 75,
@@ -794,35 +767,46 @@
     }
 
     function updateAircraftControls(craft, delta) {
-      const up=(keys.Space?1:0)-(keys.ShiftLeft||keys.ShiftRight?1:0);
-      const turn=(keys.KeyD?1:0)-(keys.KeyA?1:0);
-      const pitchInput=(keys.KeyW?1:0)-(keys.KeyS?1:0);
-      if (craft.type==='helicopter') {
-        craft.yaw -= turn*1.6*delta;
-        craft.pitch=THREE.MathUtils.damp(craft.pitch,pitchInput*.38,4,delta);
-        const forward=new THREE.Vector3(Math.sin(craft.yaw),0,Math.cos(craft.yaw));
-        const target=forward.multiplyScalar(pitchInput*15); target.y=up*10;
-        craft.velocity.lerp(target,1-Math.exp(-2.8*delta));
-        craft.velocity.y+=Math.sin(clock.getElapsedTime()*4)*.08;
+      const riseInput = (keys.Space ? 1 : 0) - ((keys.ShiftLeft || keys.ShiftRight) ? 1 : 0);
+      const turnInput = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0);
+      // Plane controls: W = forward/throttle; S = brake/reverse.
+      const throttleInput = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0);
+
+      if (craft.type === 'helicopter') {
+        craft.yaw -= turnInput * 1.55 * delta;
+        craft.pitch = THREE.MathUtils.damp(craft.pitch, throttleInput * 0.34, 4.2, delta);
+        const target = new THREE.Vector3(Math.sin(craft.yaw), 0, Math.cos(craft.yaw)).multiplyScalar(throttleInput * 15);
+        target.y = riseInput * 10;
+        craft.velocity.lerp(target, 1 - Math.exp(-3 * delta));
       } else {
-        const throttle=(keys.KeyW?1:0)-(keys.KeyS?.35:0);
-        craft.yaw -= turn*1.18*delta;
-        craft.pitch=THREE.MathUtils.damp(craft.pitch,up*.34,3.4,delta);
-        const forward=new THREE.Vector3(Math.sin(craft.yaw), Math.sin(craft.pitch), Math.cos(craft.yaw));
-        const speed=THREE.MathUtils.clamp(craft.velocity.length()+throttle*17*delta,7,31);
-        craft.velocity.lerp(forward.multiplyScalar(speed),1-Math.exp(-2.1*delta));
-        craft.velocity.y+=craft.pitch*2.4*delta;
-        craft.roll=THREE.MathUtils.damp(craft.roll,-turn*.42,3,delta);
+        craft.yaw -= turnInput * 1.18 * delta;
+        craft.pitch = THREE.MathUtils.damp(craft.pitch, riseInput * 0.32, 3.8, delta);
+        craft.roll = THREE.MathUtils.damp(craft.roll, -turnInput * 0.4, 3.5, delta);
+
+        // This plane model points along local -Z. Using -sin/-cos makes the
+        // vehicle travel in the same direction its nose is facing.
+        const forward = new THREE.Vector3(-Math.sin(craft.yaw), Math.sin(craft.pitch), -Math.cos(craft.yaw)).normalize();
+        const forwardSpeed = craft.velocity.dot(forward);
+        const targetSpeed = throttleInput > 0 ? 30 : throttleInput < 0 ? -8 : 15;
+        const nextSpeed = THREE.MathUtils.damp(forwardSpeed, targetSpeed, 2.6, delta);
+        craft.velocity.copy(forward.multiplyScalar(nextSpeed));
+        craft.velocity.y = THREE.MathUtils.damp(craft.velocity.y, riseInput * 11 + Math.sin(craft.pitch) * Math.abs(nextSpeed), 2.7, delta);
       }
-      craft.position.addScaledVector(craft.velocity,delta);
-      if (craft.position.y<1.25) { craft.position.y=1.25; craft.velocity.y=Math.max(0,craft.velocity.y)*.25; }
-      if (craft.position.y>65) craft.position.y=65;
-      if (Math.abs(craft.position.x)>105 || Math.abs(craft.position.z)>105) { craft.position.x=THREE.MathUtils.clamp(craft.position.x,-105,105); craft.position.z=THREE.MathUtils.clamp(craft.position.z,-105,105); }
+
+      craft.position.addScaledVector(craft.velocity, delta);
+      if (craft.position.y < 1.25) {
+        craft.position.y = 1.25;
+        craft.velocity.y = Math.max(0, craft.velocity.y * 0.2);
+      }
+      craft.position.y = Math.min(craft.position.y, 65);
+      craft.position.x = THREE.MathUtils.clamp(craft.position.x, -105, 105);
+      craft.position.z = THREE.MathUtils.clamp(craft.position.z, -105, 105);
       craft.visual.position.copy(craft.position);
-      craft.visual.rotation.set(craft.pitch,craft.yaw,craft.roll);
-      if (craft.rotor) { craft.rotor.rotation.y+=delta*38; craft.tailRotor.rotation.z+=delta*42; }
-      if (craft.propeller) craft.propeller.rotation.z+=delta*45;
-      speedEl.textContent=Math.round(craft.velocity.length());
+      craft.visual.rotation.set(craft.pitch, craft.yaw, craft.roll);
+      if (craft.pilot) craft.pilot.visible = activeAircraft === craft;
+      if (craft.rotor) { craft.rotor.rotation.y += delta * 38; craft.tailRotor.rotation.z += delta * 42; }
+      if (craft.propeller) craft.propeller.rotation.z += delta * 45;
+      speedEl.textContent = Math.round(craft.velocity.length());
     }
 
     function nearestRide() {
@@ -833,7 +817,6 @@
 
     function exitActiveAircraft() {
       const craft=activeAircraft;
-      craft.unpiloted = craft.position.y > 1.35;
       activeAircraft=null; playerInVehicle=false; player.visual.visible=true;
       const side=new THREE.Vector3(2.6,1.2,0).applyEuler(craft.visual.rotation);
       player.body.position.copy(craft.position.clone().add(side)); player.body.velocity.set(0,0,0); player.body.wakeUp();
@@ -1571,7 +1554,7 @@
       const ride=nearestRide();
       if (ride.distance>=4.2) { showMessage('Walk closer to the cart, helicopter, or plane to enter it.'); return; }
       player.visual.visible=false; player.body.velocity.set(0,0,0); player.body.position.set(0,-50,0);
-      if (ride.kind==='air') { activeAircraft=ride.item; playerInVehicle=true; modeEl.textContent=`Flying ${activeAircraft.label}`; showMessage(`${activeAircraft.label}: W/S forward, A/D turn, Space rise, Shift descend, E exit.`); }
+      if (ride.kind==='air') { activeAircraft=ride.item; playerInVehicle=true; modeEl.textContent=`Flying ${activeAircraft.label}`; showMessage(`${activeAircraft.label}: W forward, S brake/reverse, A/D turn, Space rise, Shift descend, E exit.`); }
       else { playerInVehicle=true; modeEl.textContent='Driving'; showMessage('Driving: W/S accelerate, A/D steer, Space brake, E exit.'); }
     }
 
@@ -1655,34 +1638,6 @@
     // -------------------------------------------------------------------------
 
     function animateFallbackHumanoid(elapsed){const h=player.visual&&player.visual.userData?player.visual.userData.humanoid:null;if(!h||playerInVehicle||activeAircraft)return;const sp=Math.hypot(player.body.velocity.x,player.body.velocity.z),moving=sp>.35&&player.grounded,ph=elapsed*(moving?Math.min(15,5+sp*1.25):2.1),stride=moving?Math.sin(ph)*Math.min(.78,.22+sp*.065):0,idle=moving?0:Math.sin(elapsed*2.1)*.035;h.legs.forEach(({pivot,side})=>pivot.rotation.x=stride*side);h.arms.forEach(({pivot,side})=>pivot.rotation.x=-stride*side+idle*side);if(h.body)h.body.position.y=1.22+(moving?Math.abs(Math.sin(ph*2))*.035:0);}
-
-    function animateFallbackHumanoid(elapsed) {
-      const h = player.visual && player.visual.userData ? player.visual.userData.humanoid : null;
-      if (!h || playerInVehicle || activeAircraft) return;
-      const speed=Math.hypot(player.body.velocity.x,player.body.velocity.z), moving=speed>.28&&player.grounded;
-      const phase=elapsed*(moving?Math.min(15,4.2+speed*1.25):2), stride=moving?Math.sin(phase)*Math.min(.68,.16+speed*.06):0;
-      const bob=moving?Math.abs(Math.sin(phase*2))*.025:Math.sin(elapsed*2)*.012;
-      h.legs.forEach(({pivot,side})=>{pivot.rotation.x=stride*side;pivot.rotation.z=side*.018;});
-      h.arms.forEach(({pivot,side})=>{pivot.rotation.x=-stride*side+(moving?0:Math.sin(elapsed*2.1)*.025*side);});
-      if(h.spine){h.spine.position.y=.98+bob;h.spine.rotation.z=moving?Math.sin(phase)*.025:Math.sin(elapsed*1.6)*.012;}
-      if(h.head)h.head.rotation.z=moving?0:Math.sin(elapsed*1.7)*.018;
-    }
-
-    function updateUnpilotedAircraft(delta) {
-      for (const craft of aircraft) {
-        if (craft === activeAircraft || !craft.unpiloted) continue;
-        craft.velocity.y -= 18 * delta;
-        craft.velocity.multiplyScalar(Math.exp(-.25 * delta));
-        craft.position.addScaledVector(craft.velocity, delta);
-        craft.pitch = THREE.MathUtils.damp(craft.pitch, .75, 1.2, delta);
-        craft.roll = THREE.MathUtils.damp(craft.roll, .25, 1.2, delta);
-        if (craft.position.y < 1.25) {
-          craft.position.y = 1.25; craft.velocity.set(0,0,0); craft.pitch=0; craft.roll=0; craft.unpiloted=false;
-          showMessage(`${craft.label} landed.`);
-        }
-        craft.visual.position.copy(craft.position); craft.visual.rotation.set(craft.pitch,craft.yaw,craft.roll);
-      }
-    }
 
     function syncPlayerVisual() {
       if (playerInVehicle) {
